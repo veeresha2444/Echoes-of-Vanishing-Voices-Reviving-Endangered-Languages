@@ -1813,8 +1813,8 @@ app.secret_key = "temporary_demo_key"
 # =====================================================
 
 # Konkani & Lambani sentence datasets
-konkani_df = pd.read_csv(r"C:\Users\veeresh ganji\Desktop\poject_7thsem\cleaned_data.csv")
-lambani_df = pd.read_csv(r"C:\Users\veeresh ganji\Desktop\poject_7thsem\lambani_sentences-2.csv")
+konkani_df = pd.read_csv(r"cleaned_data.csv")
+lambani_df = pd.read_csv(r"lambani_sentences-2.csv")
 
 konkani_sentence_data = list(zip(
     konkani_df["Konkani"].astype(str),
@@ -1828,10 +1828,10 @@ lambani_sentence_data = list(zip(
 
 # Word dictionaries
 konkani_word_df = pd.read_csv(
-    r"C:\Users\veeresh ganji\Desktop\poject_7thsem (2)\poject_7thsem\poject_7thsem\konkani_rule_based_pos words to words.csv"
+    r"konkani_rule_based_pos words to words.csv"
 )
 lambani_word_df = pd.read_csv(
-    r"C:\Users\veeresh ganji\Desktop\poject_7thsem (2)\poject_7thsem\poject_7thsem\lambani_words 200.csv"
+    r"lambani_words 200.csv"
 )
 
 konkani_word_data = list(zip(
