@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konkani & Lambani Dictionary</title>
+    <title>Dictionary - Konkani-Lambani-Hindi Learn</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         * {
             margin: 0;
@@ -18,58 +19,43 @@
             --primary: #4e54c8;
             --secondary: #8f94fb;
             --accent: #ff6b6b;
-            --light: #f8f9fa;
             --dark: #343a40;
-            --konkani: #4e54c8;
-            --lambani: #8f94fb;
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--dark);
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 0; /* Remove padding here, use container for content padding */
+        }
+
+        /* ===== HEADER (SAME AS TRANSLATION PAGE) ===== */
+        header {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .container {
             width: 100%;
-            max-width: 900px; /* Adjusted for content area */
-            margin: 20px auto; /* Adjusted margin */
-            padding: 0 20px; /* Added horizontal padding */
-        }
-
-        /* Header Styles - Copied from other pages */
-        header {
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
-            width: 100%; /* Make header full width */
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px; /* Match max width of other pages */
-            margin: 0 auto;
-            padding: 0 20px; /* Padding inside header content */
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .logo i {
-            color: var(--primary);
-            font-size: 2rem;
         }
 
         .logo h1 {
@@ -81,7 +67,6 @@
             display: flex;
             list-style: none;
             gap: 20px;
-            align-items: center; /* Align nav items vertically */
         }
 
         nav a {
@@ -90,10 +75,10 @@
             font-weight: 500;
             padding: 5px 10px;
             border-radius: 5px;
-            transition: all 0.3s ease;
         }
 
-        nav a:hover, nav a.active {
+        nav a:hover,
+        nav a.active {
             background-color: var(--primary);
             color: white;
         }
@@ -101,537 +86,203 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-left: 20px; /* Add space between nav links and user info */
-        }
-
-        .user-info span {
+            gap: 12px;
             font-weight: 500;
         }
 
         .logout-btn {
             background-color: var(--accent);
             color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
             text-decoration: none;
+            font-size: 0.9rem;
         }
 
-        /* End Header Styles */
-
-
-        .dictionary-card {
-            background-color: white;
-            border-radius: 15px;
+        /* ===== DICTIONARY CARD ===== */
+        .page {
+            background: white;
+            border-radius: 10px;
             padding: 30px;
-            margin-top: 20px; /* Adjusted margin */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,.1);
         }
 
-        .dictionary-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .dictionary-header h1 {
+        .page h2 {
             color: var(--primary);
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        .dictionary-header p {
-            color: #6c757d;
-            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .language-tabs {
             display: flex;
+            gap: 20px;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .language-tab {
-            padding: 12px 25px;
-            background: white;
+            padding: 10px 25px;
             border: 2px solid var(--primary);
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: 600;
-            font-size: 1rem;
-            flex: 1;
-            text-align: center;
-            max-width: 200px;
         }
 
         .language-tab.active {
             background: var(--primary);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
-        }
-
-        .language-tab.konkani.active {
-            background: var(--konkani);
-            border-color: var(--konkani);
-        }
-
-        .language-tab.lambani.active {
-            background: var(--lambani);
-            border-color: var(--lambani);
         }
 
         .search-container {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .search-input {
             flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 5px 20px rgba(78, 84, 200, 0.2);
+            padding: 14px 20px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
         }
 
         .search-btn {
-            padding: 15px 30px;
-            background: var(--primary);
-            color: white;
+            padding: 14px 30px;
+            border-radius: 25px;
             border: none;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
-        }
-
-        .search-btn:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-        }
-
-        .results-container {
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .results-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .results-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .results-container::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
         }
 
         .word-card {
-            background-color: white;
+            border: 2px solid #eee;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            border: 2px solid #e0e0e0;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .word-card:hover {
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .word-card.konkani::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background-color: var(--konkani);
-        }
-
-        .word-card.lambani::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background-color: var(--lambani);
-        }
-
-        .word-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .word-text {
-            flex: 1;
+            padding: 15px;
+            margin-bottom: 12px;
         }
 
         .source-word {
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 8px;
-            line-height: 1.4;
         }
 
         .hindi-translation {
-            color: #6c757d;
-            font-size: 1.1rem;
-            line-height: 1.4;
+            color: #666;
+            margin-top: 5px;
         }
 
-        .language-badge {
-            font-size: 0.8rem;
-            padding: 6px 12px;
-            border-radius: 15px;
-            background-color: rgba(78, 84, 200, 0.1);
-            color: var(--konkani);
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        .lambani-badge {
-            background-color: rgba(143, 148, 251, 0.1);
-            color: var(--lambani);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6c757d;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #adb5bd;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            font-size: 1rem;
-        }
-
-        .footer {
-            margin-top: auto; /* Push footer to bottom */
-            padding: 20px 0;
-            text-align: center;
+        footer {
+            margin-top: auto;
             color: white;
-            font-size: 0.9rem;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.1); /* Optional: Add background for visibility */
-        }
-
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav ul {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .dictionary-card {
-                padding: 20px;
-            }
-
-            .dictionary-header h1 {
-                font-size: 1.8rem;
-            }
-
-            .search-container {
-                flex-direction: column;
-            }
-
-            .search-btn {
-                width: 100%;
-            }
-
-            .word-content {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .language-badge {
-                align-self: flex-start;
-            }
-
-            .stats-bar {
-                flex-direction: column;
-                align-items: center;
-            }
+            text-align: center;
+            padding: 15px 0;
         }
     </style>
 </head>
+
 <body>
-    <!-- Header Section - Added -->
-    <header>
-        <div class="container header-content">
-            <div class="logo">
-                <i class="fas fa-language fa-2x"></i>
-                <h1>Konkani-Lambani-Hindi Learn</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="/home" class="nav-link">Home</a></li>
-                    <li><a href="/translation" class="nav-link">Translation</a></li>
-                    <li><a href="/courses" class="nav-link active">Dictionary</a></li>
-                    <li><a href="/about" class="nav-link">About</a></li>
-                    <li><a href="/contact" class="nav-link">Contact</a></li>
-                    <li class="user-info">
-                        <span>Welcome, {{ name }}!</span>
-                        <a href="/logout" class="logout-btn">Logout</a>
-                    </li>
-                </ul>
-            </nav>
+
+<header>
+    <div class="container header-content">
+        <div class="logo">
+            <i class="fas fa-language fa-2x" style="color:#4e54c8;"></i>
+            <h1>Konkani-Lambani-Hindi Learn</h1>
         </div>
-    </header>
-    <!-- End Header Section -->
 
-    <div class="container">
-        <div class="dictionary-card">
-            <div class="dictionary-header">
-                <h1>Konkani & Lambani Dictionary</h1>
-                <p>Search for words in Konkani and Lambani with Hindi meanings</p>
-            </div>
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/translation">Translation</a></li>
+                <li><a href="/courses" class="active">Dictionary</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
 
-            <div class="language-tabs">
-                <div class="language-tab konkani active" data-lang="konkani">Konkani</div>
-                <div class="language-tab lambani" data-lang="lambani">Lambani</div>
-            </div>
-
-            <div class="search-container">
-                <input type="text" class="search-input" id="search-input" placeholder="Enter word to search in Konkani, Lambani, or Hindi...">
-                <button class="search-btn" id="search-btn">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-
-            <div class="results-container" id="results-container">
-                <div class="empty-state" id="empty-state">
-                    <i class="fas fa-search"></i>
-                    <h3>Search for words</h3>
-                    <p>Select a language and enter a word to see results</p>
-                </div>
-            </div>
+        <div class="user-info">
+            <span>Welcome, {{ name }}!</span>
+            <a href="/logout" class="logout-btn">Logout</a>
         </div>
-    </div> <!-- Close container for main content -->
+    </div>
+</header>
 
-    <footer class="footer"> <!-- Added footer with class -->
-        <div class="container">
-            <p>&copy; 2026 Konkani & Lambani Dictionary</p>
+<main class="container">
+    <div class="page">
+        <h2>Dictionary Search</h2>
+
+        <div class="language-tabs">
+            <div class="language-tab active" data-lang="konkani">Konkani</div>
+            <div class="language-tab" data-lang="lambani">Lambani</div>
         </div>
-    </footer>
 
-    <script>
-        let currentLanguage = 'konkani'; // Default language
+        <div class="search-container">
+            <input id="search-input" class="search-input" placeholder="Enter word to search">
+            <button class="search-btn" id="search-btn">Search</button>
+        </div>
 
-        // Initialize the dictionary
-        async function initDictionary() {
-            updateTabStyles(); // Set initial tab style
+        <div id="results-container">
+            <p style="text-align:center;color:#777;">Search for a word to see results</p>
+        </div>
+    </div>
+</main>
 
-            // Set up event listeners for language tabs
-            document.querySelectorAll('.language-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    currentLanguage = this.getAttribute('data-lang');
-                    updateTabStyles(); // Update tab styles
-                    // Clear previous results and search input when switching languages
-                    const resultsContainer = document.getElementById('results-container');
-                    resultsContainer.innerHTML = ''; // Clear results
-                    const emptyState = document.getElementById('empty-state').cloneNode(true);
-                    resultsContainer.appendChild(emptyState); // Show empty state
-                    document.getElementById('search-input').value = ''; // Clear search input
-                    console.log('Switched to language tab:', currentLanguage); // Log language switch
-                });
-            });
+<footer>
+    <p>© 2026 Konkani-Lambani-Hindi Learning Platform</p>
+</footer>
 
-            // Set up event listeners for search
-            document.getElementById('search-btn').addEventListener('click', searchWords);
-            document.getElementById('search-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); // Prevent default form submission
-                    searchWords();
-                }
-            });
+<script>
+    let currentLanguage = "konkani";
 
-             // Initial display of empty state (handled by renderResults)
-            renderResults([], ''); // Call renderResults with empty array on load
-        }
+    document.querySelectorAll(".language-tab").forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll(".language-tab").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            currentLanguage = tab.dataset.lang;
+        };
+    });
 
-        // Search words function using Flask API
-        async function searchWords() {
-            const searchTerm = document.getElementById('search-input').value.trim();
-            const resultsContainer = document.getElementById('results-container');
+    document.getElementById("search-btn").onclick = searchWords;
+    document.getElementById("search-input").onkeypress = e => {
+        if (e.key === "Enter") searchWords();
+    };
 
+    async function searchWords() {
+        const word = document.getElementById("search-input").value.trim();
+        const container = document.getElementById("results-container");
+        if (!word) return;
 
-            // If no search term, show empty state
-            if (!searchTerm) {
-                console.log('No search term provided.');
-                 resultsContainer.innerHTML = ''; // Clear previous results
-                 const emptyState = document.getElementById('empty-state').cloneNode(true);
-                 resultsContainer.appendChild(emptyState);
+        container.innerHTML = "<p>Searching...</p>";
+
+        try {
+            const res = await fetch(`/api/search?lang=${currentLanguage}&word=${encodeURIComponent(word)}`);
+            const data = await res.json();
+
+            container.innerHTML = "";
+
+            if (!data.results || data.results.length === 0) {
+                container.innerHTML = "<p>No results found</p>";
                 return;
             }
 
-             console.log(`Searching for "${searchTerm}" in ${currentLanguage}`);
-
-            // Show loading state
-            resultsContainer.innerHTML = `
-                <div class="loading" style="display: block;">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Searching in ${currentLanguage}...</p>
-                </div>
-            `;
-
-
-            try {
-                console.log(`Fetching search results from /api/search?lang=${currentLanguage}&word=${encodeURIComponent(searchTerm)}`);
-                const response = await fetch(`/api/search?lang=${currentLanguage}&word=${encodeURIComponent(searchTerm)}`);
-                console.log('Search response status:', response.status);
-
-
-                if (!response.ok) {
-                     const errorText = await response.text();
-                    console.error('Failed to search words:', response.status, response.statusText, errorText);
-                    showError(`Failed to search. Error: ${response.status} ${response.statusText}`);
-                    return; // Stop execution on error
-                }
-
-                const data = await response.json();
-                console.log('Search data received:', data);
-
-                // Check if data has 'results' property and it's an array
-                if (data && Array.isArray(data.results)) {
-                   renderResults(data.results, searchTerm);
-                } else {
-                    console.error('Invalid data format received for search results:', data);
-                    showError('Received invalid data from server.');
-                }
-
-
-            } catch (error) {
-                console.error('Error searching words:', error);
-                showError(`Search failed. Please try again. Error: ${error.message}`);
-            }
-        }
-
-        // Show error message
-        function showError(message) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Error</h3>
-                    <p>${message}</p>
-                </div>
-            `;
-             console.log('Displayed error message on frontend:', message);
-        }
-
-        // Update tab styles based on current language
-        function updateTabStyles() {
-            document.querySelectorAll('.language-tab').forEach(tab => {
-                if (tab.getAttribute('data-lang') === currentLanguage) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-             console.log('Updated tab styles for language:', currentLanguage);
-        }
-
-        // Render the search results
-        function renderResults(results, searchTerm) {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = ''; // Clear previous results
-
-            console.log(`Rendering ${results.length} results for "${searchTerm}" in ${currentLanguage}`);
-
-            if (results.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <h3>No results found</h3>
-                        <p>No words found for "${searchTerm}" in ${currentLanguage}</p>
+            data.results.forEach(item => {
+                container.innerHTML += `
+                    <div class="word-card">
+                        <div class="source-word">${item.word}</div>
+                        <div class="hindi-translation">Hindi: ${item.hindi}</div>
                     </div>
                 `;
-                 console.log('Displayed no results state.');
-            } else {
-                // Removed the results-count div
-                results.forEach(item => {
-                    const wordCard = document.createElement('div');
-                    wordCard.className = `word-card ${currentLanguage}`; // Add language class for styling
-
-                    const wordContent = document.createElement('div');
-                    wordContent.className = 'word-content';
-
-                    const wordText = document.createElement('div');
-                    wordText.className = 'word-text';
-
-                    const sourceWord = document.createElement('div');
-                    sourceWord.className = 'source-word';
-                    // Ensure item.word exists before setting textContent
-                    sourceWord.textContent = item.word || 'N/A';
-
-
-                    const hindiWord = document.createElement('div');
-                    hindiWord.className = 'hindi-translation';
-                     // Ensure item.hindi exists before setting textContent
-                    hindiWord.textContent = `Hindi: ${item.hindi || 'N/A'}`;
-
-
-                    const languageBadge = document.createElement('div');
-                    languageBadge.className = `language-badge ${currentLanguage === 'lambani' ? 'lambani-badge' : ''}`;
-                    languageBadge.textContent = currentLanguage === 'konkani' ? 'Konkani' : 'Lambani';
-
-                    wordText.appendChild(sourceWord);
-                    wordText.appendChild(hindiWord);
-                    wordContent.appendChild(wordText);
-                    wordContent.appendChild(languageBadge);
-                    wordCard.appendChild(wordContent);
-
-                    resultsContainer.appendChild(wordCard);
-                     console.log('Appended word card for:', item.word);
-                });
-            }
+            });
+        } catch {
+            container.innerHTML = "<p>Backend not reachable</p>";
         }
+    }
+</script>
 
-        // Initialize the dictionary when the page loads
-        document.addEventListener('DOMContentLoaded', initDictionary);
-    </script>
 </body>
 </html>
+

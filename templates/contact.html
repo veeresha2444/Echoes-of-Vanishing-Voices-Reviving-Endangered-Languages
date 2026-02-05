@@ -13,7 +13,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         :root {
             --primary: #4e54c8;
             --secondary: #8f94fb;
@@ -21,7 +21,7 @@
             --light: #f8f9fa;
             --dark: #343a40;
         }
-
+        
         body {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             color: var(--dark);
@@ -29,14 +29,15 @@
             display: flex;
             flex-direction: column;
         }
-
+        
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
+        
+        /* Header Styles */
         header {
             background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -45,35 +46,36 @@
             top: 0;
             z-index: 100;
         }
-
+        
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
+        
         .logo i {
             color: var(--primary);
             font-size: 2rem;
         }
-
+        
         .logo h1 {
             font-size: 1.8rem;
             color: var(--primary);
         }
-
+        
         nav ul {
             display: flex;
             list-style: none;
             gap: 20px;
+            align-items: center;
         }
-
+        
         nav a {
             text-decoration: none;
             color: var(--dark);
@@ -82,12 +84,33 @@
             border-radius: 5px;
             transition: all 0.3s ease;
         }
-
+        
         nav a:hover, nav a.active {
             background-color: var(--primary);
             color: white;
         }
-
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info span {
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Page Styles */
         .page {
             background-color: white;
             border-radius: 10px;
@@ -95,49 +118,50 @@
             margin: 30px auto;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
+        
         .page h2 {
             color: var(--primary);
             margin-bottom: 20px;
             text-align: center;
         }
-
+        
+        /* Contact Page Styles */
         .contact-container {
             display: flex;
             flex-direction: column;
             gap: 40px;
             margin-top: 30px;
         }
-
+        
         @media (min-width: 992px) {
             .contact-container {
                 flex-direction: row;
             }
-
+            
             .contact-info {
                 flex: 1;
                 padding-right: 20px;
             }
-
+            
             .contact-form {
                 flex: 1;
                 padding-left: 20px;
                 border-left: 1px solid #eee;
             }
         }
-
+        
         .contact-info h3, .contact-form h3 {
             color: var(--primary);
             margin-bottom: 20px;
         }
-
+        
         .contact-item {
             display: flex;
             align-items: flex-start;
             gap: 15px;
             margin-bottom: 20px;
         }
-
+        
         .contact-item i {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -147,21 +171,21 @@
             min-width: 20px;
             text-align: center;
         }
-
+        
         .contact-item h4 {
             margin-bottom: 5px;
         }
-
+        
         .social-links {
             margin-top: 30px;
         }
-
+        
         .social-icons {
             display: flex;
             gap: 15px;
             margin-top: 10px;
         }
-
+        
         .social-icons a {
             display: flex;
             align-items: center;
@@ -174,15 +198,15 @@
             transition: transform 0.3s ease;
             text-decoration: none;
         }
-
+        
         .social-icons a:hover {
             transform: translateY(-3px);
         }
-
+        
         .form-group {
             margin-bottom: 20px;
         }
-
+        
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
@@ -191,12 +215,12 @@
             font-size: 1rem;
             font-family: inherit;
         }
-
+        
         .form-group textarea {
             resize: vertical;
             min-height: 120px;
         }
-
+        
         .submit-btn {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
@@ -208,48 +232,50 @@
             transition: all 0.3s ease;
             font-size: 1rem;
         }
-
+        
         .submit-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .contact-container {
+                gap: 30px;
+            }
+            
+            @media (min-width: 992px) {
+                .contact-info, .contact-form {
+                    padding: 0 15px;
+                }
+                
+                .contact-form {
+                    border-left: 1px solid #eee;
+                }
+            }
+        }
+        
         footer {
             background-color: rgba(255, 255, 255, 0.9);
             padding: 20px 0;
             text-align: center;
             margin-top: auto;
         }
-
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav ul {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .contact-container {
-                gap: 30px;
-            }
-
-            @media (min-width: 992px) {
-                .contact-info, .contact-form {
-                    padding: 0 15px;
-                }
-
-                .contact-form {
-                    border-left: 1px solid #eee;
-                }
-            }
-        }
     </style>
 </head>
 <body>
-     <header>
+    <!-- Header Section -->
+    <header>
         <div class="container header-content">
             <div class="logo">
                 <i class="fas fa-language fa-2x"></i>
@@ -259,23 +285,20 @@
                 <ul>
                     <li><a href="/home" class="nav-link">Home</a></li>
                     <li><a href="/translation" class="nav-link">Translation</a></li>
-                    <li><a href="/courses" class="nav-link">Dictionary</a></li>
+                    <li><a href="/courses" class="nav-link">Dictonary</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
                     <li><a href="/contact" class="nav-link active">Contact</a></li>
-                    <li class="user-info">
-                        <span>Welcome, {{ name }}!</span>
-                        <a href="/logout" class="logout-btn">Logout</a>
-                    </li>
                 </ul>
             </nav>
         </div>
     </header>
 
+    <!-- Contact Page Content -->
     <main class="container">
         <div class="page">
             <h2>Contact Us</h2>
             <p style="text-align: center; margin-bottom: 30px;">Have questions or feedback? We'd love to hear from you. Get in touch with our team.</p>
-
+            
             <div class="contact-container">
                 <div class="contact-info">
                     <h3>Get In Touch</h3>
@@ -286,7 +309,7 @@
                             <p>123 Language Street, Learning City, 560001</p>
                         </div>
                     </div>
-
+                    
                     <div class="contact-item">
                         <i class="fas fa-phone"></i>
                         <div>
@@ -294,24 +317,15 @@
                             <p>+91 9876543210</p>
                         </div>
                     </div>
-
+                    
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
                         <div>
                             <h4>Email</h4>
-                            <p>info@konkanilambanilearn.com</p>
+                            <p>info@konkanihindilearn.com</p>
                         </div>
                     </div>
-
-                    <div class="contact-item">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <h4>Business Hours</h4>
-                            <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                            <p>Saturday: 10:00 AM - 4:00 PM</p>
-                        </div>
-                    </div>
-
+                    
                     <div class="social-links">
                         <h4>Follow Us</h4>
                         <div class="social-icons">
@@ -323,26 +337,26 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="contact-form">
                     <h3>Send Message</h3>
                     <form id="contactForm">
                         <div class="form-group">
                             <input type="text" placeholder="Your Name" required>
                         </div>
-
+                        
                         <div class="form-group">
                             <input type="email" placeholder="Your Email" required>
                         </div>
-
+                        
                         <div class="form-group">
                             <input type="text" placeholder="Subject" required>
                         </div>
-
+                        
                         <div class="form-group">
                             <textarea placeholder="Your Message" rows="5" required></textarea>
                         </div>
-
+                        
                         <button type="submit" class="submit-btn">Send Message <i class="fas fa-paper-plane"></i></button>
                     </form>
                 </div>
@@ -350,6 +364,7 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer>
         <div class="container">
             <p>&copy; 2026 Konkani-Lambani-Hindi Learning Platform. All rights reserved.</p>
