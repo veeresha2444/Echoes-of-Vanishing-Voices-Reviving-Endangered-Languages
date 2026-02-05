@@ -1783,14 +1783,7 @@ print("Contact page created successfully")
 # In[ ]:
 
 
-
-
-# In[ ]:
-
-
-# =====================================================
-# 🔹 IMPORTS
-# =====================================================
+import os
 import pandas as pd
 import re
 import difflib
@@ -1808,41 +1801,47 @@ from flask import (
 app = Flask(__name__)
 app.secret_key = "temporary_demo_key"
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # =====================================================
-# 🔹 LOAD DATASETS
+# 🔹 SAFE CSV LOADER
 # =====================================================
+def safe_read_csv(filename):
+    path = os.path.join(BASE_DIR, filename)
+    if not os.path.exists(path):
+        print(f"⚠️ CSV not found: {filename}")
+        return pd.DataFrame()
+    return pd.read_csv(path)
 
-# Konkani & Lambani sentence datasets
-konkani_df = pd.read_csv(r"cleaned_data.csv")
-lambani_df = pd.read_csv(r"lambani_sentences-2.csv")
+def safe_sentence_pairs(df, col1, col2):
+    df.columns = df.columns.str.strip().str.lower()
+    col1, col2 = col1.lower(), col2.lower()
 
-konkani_sentence_data = list(zip(
-    konkani_df["Konkani"].astype(str),
-    konkani_df["Hindi"].astype(str)
-))
+    if col1 in df.columns and col2 in df.columns:
+        return list(zip(df[col1].astype(str), df[col2].astype(str)))
+    print(f"⚠️ Missing columns: {col1}, {col2} | Found: {df.columns.tolist()}")
+    return []
 
-lambani_sentence_data = list(zip(
-    lambani_df["Lambani"].astype(str),
-    lambani_df["Hindi"].astype(str)
-))
+def safe_word_pairs(df):
+    if df.shape[1] >= 2:
+        return list(zip(df.iloc[:, 0].astype(str), df.iloc[:, 1].astype(str)))
+    print("⚠️ Word CSV has insufficient columns")
+    return []
 
-# Word dictionaries
-konkani_word_df = pd.read_csv(
-    r"konkani_rule_based_pos words to words.csv"
-)
-lambani_word_df = pd.read_csv(
-    r"lambani_words 200.csv"
-)
+# =====================================================
+# 🔹 LOAD DATASETS (SAFE)
+# =====================================================
+konkani_df = safe_read_csv("cleaned_data.csv")
+lambani_df = safe_read_csv("lambani_sentences-2.csv")
 
-konkani_word_data = list(zip(
-    konkani_word_df.iloc[:, 0].astype(str),
-    konkani_word_df.iloc[:, 1].astype(str)
-))
+konkani_sentence_data = safe_sentence_pairs(konkani_df, "Konkani", "Hindi")
+lambani_sentence_data = safe_sentence_pairs(lambani_df, "Lambani", "Hindi")
 
-lambani_word_data = list(zip(
-    lambani_word_df.iloc[:, 0].astype(str),
-    lambani_word_df.iloc[:, 1].astype(str)
-))
+konkani_word_df = safe_read_csv("konkani_rule_based_pos words to words.csv")
+lambani_word_df = safe_read_csv("lambani_words 200.csv")
+
+konkani_word_data = safe_word_pairs(konkani_word_df)
+lambani_word_data = safe_word_pairs(lambani_word_df)
 
 # =====================================================
 # 🔹 BOOST WORDS
@@ -1858,8 +1857,12 @@ konkani_sample_data = [
 # =====================================================
 # 🔹 TRANSLATION MAPS
 # =====================================================
-konkani_translation_data = konkani_sentence_data + konkani_word_data + konkani_sample_data
-lambani_translation_data = lambani_sentence_data + lambani_word_data
+konkani_translation_data = (
+    konkani_sentence_data + konkani_word_data + konkani_sample_data
+)
+lambani_translation_data = (
+    lambani_sentence_data + lambani_word_data
+)
 
 konkani_to_hindi = {k.strip(): h.strip() for k, h in konkani_translation_data}
 hindi_to_konkani = {h.strip(): k.strip() for k, h in konkani_translation_data}
@@ -1867,26 +1870,23 @@ hindi_to_konkani = {h.strip(): k.strip() for k, h in konkani_translation_data}
 lambani_to_hindi = {k.strip(): h.strip() for k, h in lambani_translation_data}
 hindi_to_lambani = {h.strip(): k.strip() for k, h in lambani_translation_data}
 
-
-# =====================================================
-# 🔹 WORD-ONLY DICTIONARIES (FOR DICTIONARY SEARCH)
-# =====================================================
 konkani_word_to_hindi = {k.strip(): h.strip() for k, h in konkani_word_data}
 hindi_to_konkani_word = {h.strip(): k.strip() for k, h in konkani_word_data}
 
 lambani_word_to_hindi = {k.strip(): h.strip() for k, h in lambani_word_data}
 hindi_to_lambani_word = {h.strip(): k.strip() for k, h in lambani_word_data}
 
+# =====================================================
+# 🔹 DICTIONARY SEARCH
+# =====================================================
 def search_word(query, language_pair, limit=10):
     query = query.strip()
     results = []
 
     if language_pair == "konkani":
-        forward = konkani_word_to_hindi
-        reverse = hindi_to_konkani_word
+        forward, reverse = konkani_word_to_hindi, hindi_to_konkani_word
     elif language_pair == "lambani":
-        forward = lambani_word_to_hindi
-        reverse = hindi_to_lambani_word
+        forward, reverse = lambani_word_to_hindi, hindi_to_lambani_word
     else:
         return results
 
@@ -1903,83 +1903,64 @@ def search_word(query, language_pair, limit=10):
 
     return results[:limit]
 
-
-# =====================================================
-# 🔹 DICTIONARY SEARCH API  ✅ REQUIRED
-# =====================================================
 @app.route("/api/search", methods=["GET"])
 def api_search():
     try:
         query = request.args.get("word", "").strip()
-        language_pair = request.args.get("lang", "konkani").lower()
+        lang = request.args.get("lang", "konkani").lower()
 
         if not query:
             return jsonify({"results": []})
 
-        results = search_word(query, language_pair)
-
-        return jsonify({
-            "results": [
-                {"word": k, "hindi": h}
-                for k, h in results
-            ]
-        })
+        results = search_word(query, lang)
+        return jsonify({"results": [{"word": k, "hindi": h} for k, h in results]})
 
     except Exception as e:
-        print("❌ DICTIONARY ERROR:", e)
-        return jsonify({"results": []}), 200
-
+        print("❌ SEARCH ERROR:", e)
+        return jsonify({"results": []})
 
 # =====================================================
-# 🔹 HELPER FUNCTIONS
+# 🔹 TRANSLATION HELPERS
 # =====================================================
 def clean_text(text):
     return re.sub(r'^[,，]+', '', text).strip()
 
 def split_sentences(text):
     parts = re.split(r'([.?!।])', text)
-    return ["".join(parts[i:i+2]).strip()
-            for i in range(0, len(parts), 2)
-            if parts[i].strip()]
+    return [
+        "".join(parts[i:i+2]).strip()
+        for i in range(0, len(parts), 2)
+        if parts[i].strip()
+    ]
 
-def translate_sentence(text, source_lang, language_pair):
-    if language_pair == "konkani":
-        if source_lang == "Konkani":
-            if text in konkani_to_hindi:
-                return konkani_to_hindi[text]
-            m = difflib.get_close_matches(text, konkani_to_hindi.keys(), 1, 0.7)
-            return konkani_to_hindi[m[0]] if m else "❌ Not found"
+def translate_sentence(text, source_lang, pair):
+    maps = {
+        ("Konkani", "konkani"): (konkani_to_hindi, hindi_to_konkani),
+        ("Hindi", "konkani"): (hindi_to_konkani, konkani_to_hindi),
+        ("Lambani", "lambani"): (lambani_to_hindi, hindi_to_lambani),
+        ("Hindi", "lambani"): (hindi_to_lambani, lambani_to_hindi),
+    }
 
-        if source_lang == "Hindi":
-            if text in hindi_to_konkani:
-                return hindi_to_konkani[text]
-            m = difflib.get_close_matches(text, hindi_to_konkani.keys(), 1, 0.7)
-            return hindi_to_konkani[m[0]] if m else "❌ Not found"
+    key = (source_lang, pair)
+    if key not in maps:
+        return "❌ Invalid selection"
 
-    if language_pair == "lambani":
-        if source_lang == "Lambani":
-            if text in lambani_to_hindi:
-                return lambani_to_hindi[text]
-            m = difflib.get_close_matches(text, lambani_to_hindi.keys(), 1, 0.7)
-            return lambani_to_hindi[m[0]] if m else "❌ Not found"
+    forward, reverse = maps[key]
+    if text in forward:
+        return forward[text]
 
-        if source_lang == "Hindi":
-            if text in hindi_to_lambani:
-                return hindi_to_lambani[text]
-            m = difflib.get_close_matches(text, hindi_to_lambani.keys(), 1, 0.7)
-            return hindi_to_lambani[m[0]] if m else "❌ Not found"
+    m = difflib.get_close_matches(text, forward.keys(), 1, 0.7)
+    return forward[m[0]] if m else "❌ Not found"
 
-    return "❌ Invalid selection"
-
-def translate_text(text, source_lang, language_pair):
+def translate_text(text, source_lang, pair):
     text = clean_text(text)
     return " ".join(
-        translate_sentence(s, source_lang, language_pair)
+        translate_sentence(s, source_lang, pair)
         for s in split_sentences(text)
     )
 
 # =====================================================
-# 🔹 AUTH / PAGES
+# 🔹 AUTH & PAGES
 # =====================================================
 users = {
     "capstone@78.com": {"name": "Demo User", "password": "capstone123"}
@@ -2038,16 +2019,15 @@ def translate():
     data = request.get_json()
     text = data.get("text", "")
     source_lang = data.get("source_lang", "Konkani")
-    language_pair = data.get("language_pair", "konkani")
+    pair = data.get("language_pair", "konkani")
 
     if not text.strip():
         return jsonify({"error": "No text"}), 400
 
-    result = translate_text(text, source_lang, language_pair)
-    return jsonify({"translation": result})
+    return jsonify({"translation": translate_text(text, source_lang, pair)})
 
 # =====================================================
-# 🔹 TEXT TO SPEECH (ELEVENLABS)
+# 🔹 TEXT TO SPEECH (SAFE)
 # =====================================================
 @app.route("/speak", methods=["POST"])
 def speak():
@@ -2057,10 +2037,11 @@ def speak():
     if not text:
         return jsonify({"error": "No text"}), 400
 
-    # ⚠️ IMPORTANT: USE A VALID, ACTIVE ELEVENLABS KEY
-    ELEVENLABS_API_KEY = "e81a31c1ef6bcaf0b5892452544feb65a76e01b8253eb3f9b90cfacd54f669ff"
-    voice_id = "21m00Tcm4TlvDq8ikWAM"  # Rachel (safe)
+    ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+    if not ELEVENLABS_API_KEY:
+        return jsonify({"error": "TTS disabled"}), 200
 
+    voice_id = "21m00Tcm4TlvDq8ikWAM"
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
 
     headers = {
@@ -2069,14 +2050,9 @@ def speak():
         "Accept": "audio/mpeg"
     }
 
-    payload = {"text": text}
-
-    r = requests.post(url, json=payload, headers=headers, timeout=10)
-
-    print("🔊 ElevenLabs status:", r.status_code)
+    r = requests.post(url, json={"text": text}, headers=headers, timeout=10)
     if r.status_code != 200:
-        print("❌ ElevenLabs error:", r.text)
-        return jsonify({"error": "TTS failed"}), 500
+        return jsonify({"error": "TTS failed"}), 200
 
     return Response(r.content, mimetype="audio/mpeg")
 
@@ -2084,226 +2060,22 @@ def speak():
 # 🔹 RUN SERVER
 # =====================================================
 if __name__ == "__main__":
-    print("🚀 Flask running at http://127.0.0.1:5000")
     app.run()
 
 
 # In[ ]:
 
 
-
-
-
-
-# In[ ]:
-
-
 # =====================================================
-# 🔥 FLASK APPLICATION (LOGIN + PAGES)
+# 🔹 IMPORTS
 # =====================================================
-from flask import (
-    Flask, render_template, request,
-    redirect, url_for, session
-)
-
-app = Flask(__name__)
-app.secret_key = 'temporary_demo_key'  # session key
-
-# =====================================================
-# 👤 TEMP USER STORE
-# =====================================================
-users = {
-    'capstone@78.com': {
-        'name': 'Demo User',
-        'password': 'capstone123'
-    }
-}
-
-# =====================================================
-# 🌐 AUTH & PAGE ROUTES
-# =====================================================
-@app.route('/')
-def get_started():
-    return render_template('get_started.html')
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        if email in users and users[email]['password'] == password:
-            session['user'] = email
-            session['name'] = users[email]['name']
-            return redirect(url_for('home'))
-        else:
-            return render_template('login.html', error='Invalid email or password')
-
-    return render_template('login.html')
-
-
-@app.route('/home')
-def home():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('home.html', name=session['name'])
-
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('get_started'))
-
-
-# =====================================================
-# 📄 PAGES
-# =====================================================
-@app.route('/translation')
-def translation():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('translation.html', name=session['name'])
-
-
-@app.route('/courses')
-def courses():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('courses.html', name=session['name'])
-
-
-@app.route('/about')
-def about():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('about.html', name=session['name'])
-
-
-@app.route('/contact')
-def contact():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template('contact.html', name=session['name'])
-
-
-# In[ ]:
-
-
-from flask import request, jsonify
-
-# --- Flask API route ---
-@app.route('/translate', methods=['POST'])
-def translate():
-    data = request.get_json()
-    text = data.get("text", "").strip()
-    source_lang = data.get("source_lang", "Konkani")  # Default to Konkani
-    language_pair = data.get("language_pair", "konkani")  # Default to konkani
-
-    if not text:
-        return jsonify({"error": "⚠️ No text provided"}), 400
-
-    translation = translate_text(text, source_lang, language_pair)
-
-    return jsonify({
-        "source_lang": source_lang,
-        "target_lang": "Hindi" if source_lang != "Hindi" else ("Konkani" if language_pair == "konkani" else "Lambani"),
-        "input_text": text,
-        "translation": translation,
-        "language_pair": language_pair
-    })
-
-# In[ ]:
-
-
-from flask import Flask, request, jsonify, render_template
-
-
-
-# =====================================================
-# 🏠 ROOT CHECK (AVOIDS 404 CONFUSION)
-# =====================================================
-@app.route("/")
-def index():
-    return "✅ Flask backend is running"
-
-# =====================================================
-# 📘 DICTIONARY SEARCH API
-# =====================================================
-@app.route("/api/search", methods=["GET"])
-def api_search():
-    try:
-        query = request.args.get("word", "").strip()
-        language_pair = request.args.get("lang", "konkani").lower()
-
-        if not query:
-            return jsonify({"results": []})
-
-        results = search_word(query, language_pair)
-
-        return jsonify({
-            "results": [
-                {"word": k, "hindi": h}
-                for k, h in results
-            ]
-        })
-
-    except Exception as e:
-        print("❌ SEARCH ERROR:", e)
-        return jsonify({"results": []}), 200
-
-
-# In[ ]:
-
-
-@app.route("/speak", methods=["POST"])
-def speak():
-    data = request.get_json()
-    text = data.get("text", "").strip()
-
-    if not text:
-        return jsonify({"error": "No text"}), 400
-
-    ELEVENLABS_API_KEY = "sk_a49c07061409512eab15a0298e199a5cf465a7b67ff533fc"
-    voice_id = "21m00Tcm4TlvDq8ikWAM"  # default safe voice
-
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-
-    headers = {
-        "xi-api-key": ELEVENLABS_API_KEY,
-        "Content-Type": "application/json",
-        "Accept": "audio/mpeg"
-    }
-
-    payload = { "text": text }
-
-    r = requests.post(url, json=payload, headers=headers)
-
-    print("ElevenLabs status:", r.status_code)
-
-    if r.status_code != 200:
-        print(r.text)
-        return jsonify({"error": "TTS failed"}), 500
-
-    return Response(r.content, mimetype="audio/mpeg")
-
 
 # In[ ]:
 
 
 
 
-# In[ ]:
 
-
-# Cell 12: Run Flask App
-if __name__ == '__main__':
-    print("Starting Flask server...")
-    print("Get Started page available at: http://127.0.0.1:5000/")
-    print("Home page with login available at: http://127.0.0.1:5000/home")
-    app.run(debug=True, use_reloader=False)
-
-# In[ ]:
 
 
 
